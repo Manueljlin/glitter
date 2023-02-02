@@ -1,0 +1,13 @@
+{
+  "name": "glitter",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": "./glitter.ts",
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "ts-command-line-args": "^2.4.2"
+  },
+  "engines": {
+    "node": ">=14.16"
+  }
+}
