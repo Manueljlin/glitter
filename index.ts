@@ -1,16 +1,11 @@
-// -----
-// color space funcs
-import { srlab2rgb, rgb2srlab } from './srlab2.js';
-import { oklab2rgb, rgb2oklab } from './oklab.js';
-import { rgb2hex } from './rgb2hex.js';
+import { Rgb } from './colorspaces/rgb.js';
+import { Oklab } from './colorspaces/oklab.js';
+import { Srlab } from './colorspaces/srlab2.js';
 
-// -----
-// tui color
 import { Chalk } from 'chalk';
 
-// -----
-// command line arguments
 import { parse } from 'ts-command-line-args';
+
 
 interface CliArgs {
     // tup: Number[][];
@@ -21,11 +16,11 @@ interface CliArgs {
     // per step changes
     hueShift?: Number;
     saturationShift?: Number;
-    lightnessShift?: Number
+    lightnessShift?: Number;
 
     steps?: Number;
 
-    // help
+    // ""help""
     help?: boolean;
 }
 
@@ -59,6 +54,10 @@ export const args = parse<CliArgs>(
             multiple: true,
             defaultValue: [0.5]
         },
+
+        // colorspace: {
+            
+        // },
 
         hueShift: {
             type: Number,
@@ -103,13 +102,56 @@ export const args = parse<CliArgs>(
 );
 
 
-args.hue.map ( hue => console.log(hue) );
+//_____________________________________________________________________________
 
 let chalk = new Chalk;
 
-let output = "Example color";
-let color = srlab2rgb(0.5, 0.5, 0.5);
-console.log(`${color}`);
-console.log(rgb2hex(color[0], color[1], color[2]));
+// args.hue.map ( hue => console.log(hue) );
 
-console.log(chalk.bgRgb(color[0], color[1], color[2]).bold(output));
+let colors: Oklab[] = [];
+
+for (let i = -1; i <= 1; i += 0.005) {
+    colors.push(new Oklab(0.5, i, i));
+}
+
+let vpad = 0;
+let hpad = 6;
+
+for (const color of colors) {
+    if (color.asHex().length == 7 && !color.asHex().includes('-')) {
+        let fgColor = (color.L >= 0.6) ? "#000" : "#FFF";
+        let linesToOutput: string[] = [
+            color.toString(),
+            // color.asHex().toString()
+        ];
+
+        let targetLength: number = Math.max(...linesToOutput.map( (line) => line.length ))
+        // console.log(targetLength.toString());
+
+        for (let _ = 0; _ < vpad; _++) {
+            linesToOutput.unshift(" ");
+            linesToOutput.push(" ");
+        }
+
+        linesToOutput.forEach( (line, i) => {
+            while (line.length < targetLength) {
+                line += " ";
+            }
+
+            for (let _ = 0; _ < hpad; _++) {
+                line = " " + line + " ";
+            }
+
+            linesToOutput[i] = line;
+        });
+
+        for (const line of linesToOutput) {
+            console.log(
+                chalk
+                    .hex(fgColor)
+                    .bgHex(color.asHex())
+                    .bold(line)
+            );
+        }
+    }
+}

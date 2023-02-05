@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "type": "module",
   "exports": "./glitter.ts",
+  "scripts": {
+    "glitter": "ts-node-esm ./index.ts -s process.env.s"
+  },
   "dependencies": {
     "chalk": "^5.2.0",
     "ts-command-line-args": "^2.4.2"
